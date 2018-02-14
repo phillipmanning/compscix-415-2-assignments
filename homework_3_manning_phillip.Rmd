@@ -1,0 +1,15 @@
+---
+title: "COMPSCIX 415.2 Homework 3"
+author: "Phillip Manning"
+date: "2/13/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Homework_3
+```{r load_packages, warning=FALSE, message=FALSE} 
+library(tidyverse)
+
