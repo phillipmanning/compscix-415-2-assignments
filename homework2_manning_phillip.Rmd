@@ -1,0 +1,103 @@
+---
+title: "Homework2_manning_phillip"
+author: "Phillip Manning"
+date: "2/11/2018"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r load_packages, warning=FALSE, message=FALSE} 
+library(tidyverse)
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))  
+
+# Data Scientist question:
+# I like that there are colored labels for the different charts, but the issue is that sometimes a pie chart would have worked better, especially for the last piece. I think there were too many histograms as well. I really didn't understand the Characteristics of Data Science at first, and likely would have omitted it. 
+
+### 3.2.4 Exercises 
+# 1. It looks like a downward trending graph
+# 2. There are 50 rows and 70 columns
+# 3. drv means f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+# 4. See graph below
+
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = hwy, y = cyl))
+# 5. This graph isn't useful because it doesn't explain the mpg usage of the different kind of vehicle classes
+  
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = class, y = drv))
+  
+  
+# 3.3.1 Exercises
+# 1. The syntax is wrong because blue should be outside of the x and y script, but still inside the aesthetic quotes. 
+# 2. Continuous variables: displ, cyl, cty, hwy, 
+#   Categorical variables: model,year,trans, drv, fl, class
+#   You can see this information by plotting along the x and y axies
+# 3. Its not possible to map a continuous variable to shape, while a categorical variable can't be mapped to size. 
+  
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = year, y = hwy, shape = fl))
+  
+# 4. Using multiple aesthetics on a single variable causes your data to be difficult to understand
+  
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = year, y = hwy, color = year, size = year, alpha = year))
+  
+# 5. The stroke aesthetic regulates the size of the border points
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = trans, y = hwy, stroke = 4)) 
+  
+# 6. The graph displays a true or false scenario and fills in the color that corresponds to the condiiton i.e if greater than 5, red, otherwise, green.  
+  
+```{r}
+  ggplot(data = mpg) +
+    geom_point(mapping = aes(x = trans, y = hwy, colour = displ < 5))
+  
+# Section 3.5.1
+# 4.The advantage is that you can easily spot the differences between different classes of vehicles using a facet. The disadvantage is that the presenatation isn't as "pretty" as it could be, and it can feel cluttered to look at each individual grpah. With a larger dataset, it would make more sense to use facets, because although color helps distinguish certain variables, it would be difficult to pinpoint the message of the graph without splitting the data up. 
+  
+```{r}
+  ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy)) + 
+    facet_wrap(~ class, nrow = 2)
+  
+# 5. nrow and n column determine the number of columns or rows displayed on the facet wrap. Other commands such as switch, dir, shrink, etc change the appearance of the facet wrap. Facet grid doesn't have the nrow or ncol argument because they determine the size of the grid.
+  
+#Section 3.6.1
+  
+# 1. geom_line for line charts, geom_boxplot,geom_histogram, geom_areachart
+# 2. I think that the graph will show two charts on top of each other: one that has the data in scatterplot, and the other a smooth line through it. 
+  
+```{r}
+  ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+
+# 3. Using Show legend False will omit the Legend from appearing on the chart. If you remove it, then the Legend will appear. I assume the author omitted the legend so that it would make us ask more questions and have a clearer picture of the chart. 
+  
+# 4. The argument se displays the confidence interval around the smooth line. 
+  
+# 5. The charts will look the same since the first line of code already brings in the aesthetics. You can just add the geoms at the end, not neccessary to write all of the aesthetics for each one, but it works regardless. 
+  
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+
+# Section 3.7.1
+
+# 2. geom_bar will automatically produce a y value if you do not provide it using a statistical transformation. geom_col will leave the data as it is and not make a stat transformation. 
+ggplot() + 
+  geom_point(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
