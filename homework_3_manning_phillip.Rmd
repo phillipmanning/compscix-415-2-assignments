@@ -8,8 +8,42 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-## Homework_3
 ```{r load_packages, warning=FALSE, message=FALSE} 
 library(tidyverse)
 
+
+```
+## Section 3.8.1
+
+### 1. The original scatter plot didn't show all of the data on the chart. 
+```{r}
+  ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = cty, y = hwy), position = "jitter")
+```
+
+### 2. To control the amount of jittering, you variate the factor and/or the amount. jitter(x, factor = 1, amount = Null)
+
+### 3. geom_count displays the current number of observations at a given point onto the graph, while geom_jitter applies to all points and adds more noise to them, revealing some points that otherwise would have been hidden. 
+
+### 4.
+```{r}
+  ggplot(data = mpg) + geom_boxplot(mapping = aes(x = class, y = hwy))
+```
+
+## Section 3.9.1
+
+### 2. labs() adds labels to the x or y coordinates, depending on which is choosen. 
+
+### 4. City and highway mpg are positively correlated. coord_fixed ensures that one unit of x equals one unit of y; making sure that the plot is sized proportionately well. Coord_abline adds a straight line to the plot. 
+
+## Section 4.4
+
+### 1. The reason why the code doesn't work is because the first line of code has an i in variable, while the following line has the number 1. 
+
+### 2. 
+
+```{r} 
+  ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy)) 
+filter(mpg, cyl==8) 
+filter(diamonds, carat > 3)
