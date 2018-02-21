@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r load_packages, warning=FALSE, message=FALSE} 
 library(tidyverse)
+library(nycflights13)
+library(dplyr)
 
 
 ```
@@ -47,3 +49,45 @@ library(tidyverse)
     geom_point(mapping = aes(x = displ, y = hwy)) 
 filter(mpg, cyl==8) 
 filter(diamonds, carat > 3)
+```
+
+##Section 5.2.4
+
+### 1.1 
+
+```{r}
+filter(flights, arr_delay >=120)
+
+filter(flights, faa == IAH)
+
+filter (flights, carrier == UA | carrier == AA | carrier == DL)
+
+filter (flights, month == 7 | month == 8 | month == 9)
+
+filter (flights, arr_delay >120 & dep_delay == 0)
+
+filter (flights, dep_delay <=60 | arr_delay <= 30)
+
+filter (flights, hour >=0 & hour <=600)
+
+```
+### 2. between() Is used to find the values between two boundary values, x and y. If we change 1.7's code to filter(flights, hour == between(0 & 600))
+
+### 3. 
+
+```{r}
+filter (flights, is.na(dep_time))
+```
+
+## 5.4.1
+
+### 1. You can select arrival delay to be in the range of 5 and 7 hours, drrival time being on time, departure time at 300 and depature delay at 60. 
+
+### 2. 
+```{r} 
+select(flights,year, year, everything())
+```
+
+### 3. one_of function allows you to select one of the variables in a character vector. 
+
+### 4. 
