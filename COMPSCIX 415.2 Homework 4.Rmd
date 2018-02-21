@@ -1,0 +1,11 @@
+---
+title: "“COMPSCIX 415.2 Homework 4”"
+author: "Phillip Manning"
+date: "2/20/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
