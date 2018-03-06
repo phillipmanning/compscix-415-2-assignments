@@ -1,0 +1,132 @@
+---
+title: "COMPSCIX 415.2 Homework 5/Midterm"
+author: "Phillip Manning"
+date: "2/27/2018"
+output: html_document
+toc: true
+toc_float: true
+---
+My Github repository for my assignments can be found at this URL [https://github.com/phillipmanning/compscix-415-2-assignments.git](https://github.com/phillipmanning/compscix-415-2-assignments.git
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+library(rmarkdown)
+library(dplyr)
+file_path <- '/Users/phillipmanning/Downloads/rail_trail.txt'
+txt_data <- read_delim(delim = '|', file = file_path)
+saveRDS(txt_data, file = "/Users/phillipmanning/Downloads/rail_trail.rds")
+glimpse(txt_data)
+'rails' <-readRDS(file = 
+"/Users/phillipmanning/Downloads/rail_trail.rds")
+```
+(tab content)
+
+## RStudio and R Markdown
+
+### 1. Look left. 
+
+## The tidyverse packages
+
+### 1. 
+
+####  Plotting - ggplot2
+####  Data munging/wrangling - dplyr
+####  Reshaping (speading and gathering) data - tidyr
+####  Importing/exporting data - readr
+
+### 2. 
+
+#### Plotting - (aes()), geom_smooth()
+#### Data munging/wrangling -filter(), select()
+#### Reshaping data - gather(), spread()
+#### Importing/exporting data (note that readRDS and saveRDS are base R functions)-read_delim(), read_csv()
+
+(tab content)
+
+## R Basics
+
+### 1. 
+```{r}
+"My_data.name___is.too00ooLong!" <- c( 1 , 2, 3 )
+print(`My_data.name___is.too00ooLong!`)
+```
+### 2. 
+```{r}
+my_string <- c('has', 'an', 'error', 'in', 'it')
+```
+
+### 3. The values in the vector became strings. 
+(tab content)
+
+## Data import/export
+### 1. 
+```{r}
+glimpse(`rails`)
+```
+### 2. 
+```{r}
+file_path <- '/Users/phillipmanning/Downloads/rail_trail.txt'
+txt_data <- read_delim(delim = '|', file = file_path)
+saveRDS(txt_data, file = "/Users/phillipmanning/Downloads/rail_trail.rds")
+glimpse(txt_data)
+'rails' <-readRDS(file = 
+"/Users/phillipmanning/Downloads/rail_trail.rds")
+glimpse(`rails`)
+```
+(tab content)
+
+## Visualization
+
+### 1. The sizes of the circles aren't to scale, so you can't compare them. The numbers aren't labelled with a percentage sign. Finally, adding the values together for one row doesn't equal to 100%. 
+
+```{r}
+ggplot(data = diamonds) + geom_boxplot(mapping = aes(x= cut, y = carat, fill = cut)) + xlab('Cut of Diamond') + ylab('Carat of Diamond') + coord_flip()
+```
+(tab content)
+
+## Data munging and wrangling
+
+### 1. 
+```{r}
+spread(table2, key = type, value = count)
+```
+### 2. mutate(diamonds, price_per_carat = price/carat)
+
+### 3. I noticed that some of the lower valued carat diamonds have a higher price, which is counterintuitive. I think we can trust these numbers, but we still need to be cautious with the correlation between price and carat. 
+```{r}
+filter(diamonds, price > 10000 & carat < 1.5 )
+```
+(tab content)
+
+## EDA
+
+### 1. The data is from 2000 - 2015
+```{r}
+ggplot(data = txhousing, mapping = aes(x = year, y = sales)) + geom_point()
+```
+### 2. 46 cities
+```{r}
+select(txhousing, city)
+txhousing %>% count(city)
+```
+### 3. 
+
+### 4. I imagine there would be an positive relationship between the numbers of listings and the number of sales. 
+```{r}
+ggplot(data = txhousing, mapping = aes(x=listings, y=sales))  + geom_smooth()
+```
+### 5. 
+```{r}
+filter(txhousing, sales == NA,)
+```
+### 6. 
+```{r}
+txhousing500 <-filter(txhousing, sales > 500)
+select(txhousing500, city, month, sales)
+ggplot(data = txhousing500, mapping = aes(x=city, y=sales)) + geom_col(position = )
+
+```
+# I just need to make a table of contents, put a hyperlink, commit with a special message, and figure out how to get the right graph on here. 
