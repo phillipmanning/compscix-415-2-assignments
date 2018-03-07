@@ -4,7 +4,8 @@ author: "Phillip Manning"
 date: "2/27/2018"
 output: html_document
 toc: true
-toc_float: true
+toc_float: true 
+toc_depth: 2
 ---
 My Github repository for my assignments can be found at this URL [https://github.com/phillipmanning/compscix-415-2-assignments.git](https://github.com/phillipmanning/compscix-415-2-assignments.git
 
@@ -22,11 +23,6 @@ glimpse(txt_data)
 'rails' <-readRDS(file = 
 "/Users/phillipmanning/Downloads/rail_trail.rds")
 ```
-(tab content)
-
-## RStudio and R Markdown
-
-### 1. Look left. 
 
 ## The tidyverse packages
 
@@ -44,7 +40,6 @@ glimpse(txt_data)
 #### Reshaping data - gather(), spread()
 #### Importing/exporting data (note that readRDS and saveRDS are base R functions)-read_delim(), read_csv()
 
-(tab content)
 
 ## R Basics
 
@@ -59,7 +54,6 @@ my_string <- c('has', 'an', 'error', 'in', 'it')
 ```
 
 ### 3. The values in the vector became strings. 
-(tab content)
 
 ## Data import/export
 ### 1. 
@@ -76,7 +70,6 @@ glimpse(txt_data)
 "/Users/phillipmanning/Downloads/rail_trail.rds")
 glimpse(`rails`)
 ```
-(tab content)
 
 ## Visualization
 
@@ -85,7 +78,6 @@ glimpse(`rails`)
 ```{r}
 ggplot(data = diamonds) + geom_boxplot(mapping = aes(x= cut, y = carat, fill = cut)) + xlab('Cut of Diamond') + ylab('Carat of Diamond') + coord_flip()
 ```
-(tab content)
 
 ## Data munging and wrangling
 
@@ -99,7 +91,6 @@ spread(table2, key = type, value = count)
 ```{r}
 filter(diamonds, price > 10000 & carat < 1.5 )
 ```
-(tab content)
 
 ## EDA
 
@@ -107,7 +98,9 @@ filter(diamonds, price > 10000 & carat < 1.5 )
 ```{r}
 ggplot(data = txhousing, mapping = aes(x = year, y = sales)) + geom_point()
 ```
-### 2. 46 cities
+
+### 2.There are 46 cities represented. 
+
 ```{r}
 select(txhousing, city)
 txhousing %>% count(city)
@@ -122,11 +115,10 @@ ggplot(data = txhousing, mapping = aes(x=listings, y=sales))  + geom_smooth()
 ```{r}
 filter(txhousing, sales == NA,)
 ```
-### 6. 
+### 6. I wasnt able to figure out how to get all the cities listed onto the x axis, but I plotted the chart as columns regardless. It would have helped to zoom out, but I wasn't sure how to do that. 
 ```{r}
 txhousing500 <-filter(txhousing, sales > 500)
 select(txhousing500, city, month, sales)
 ggplot(data = txhousing500, mapping = aes(x=city, y=sales)) + geom_col(position = )
 
 ```
-# I just need to make a table of contents, put a hyperlink, commit with a special message, and figure out how to get the right graph on here. 
