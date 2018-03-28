@@ -1,0 +1,94 @@
+---
+title: "Homework8_manning_phillip"
+author: "Phillip Manning"
+date: "3/26/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ROCR)
+library(partykit)
+library(ISLR)
+library(rpart)
+library(broom)
+file_path <- '/Users/phillipmanning/Downloads/train.csv'
+train <- read.table(file_path,
+                    header = FALSE,
+                    sep = ",")
+```
+## Exercise 1 
+```{r}
+dim(train)
+```
+## Exercise 2 
+```{r}
+set.seed(29283)
+train_set <- train %>% sample_frac(.7)
+```
+
+## Exercise 3 
+### "Not sure why R isn't reading Survived, gives me an error"
+```{r}
+mod_1 <- glm(Survived ~ 1 , data = train, family = 'binomial')
+
+tidy(mod_1)
+
+```
+## Exercise 4
+```{r}
+tree_mod <- rpart( Survived ~ ., data = train)
+
+plot(as.party(tree_mod))
+```
+## Exercise 5 
+
+```{r}
+test_logit <- predict(mod_1, newdata = test_set, type = 'response')
+test_tree <- predict(tree_mod, newdata = test_set)[,2]
+
+# create the prediction objects for both models
+pred_logit <- prediction(predictions = test_logit, labels = test_set$Survived)
+pred_tree <- prediction(predictions = test_tree, labels = test_set$Survived)
+
+# get the FPR and TPR for the logistic model
+# recall that the ROC curve plots the FPR on the x-axis
+perf_logit <- performance(pred_logit, measure = 'tpr', x.measure = 'fpr')
+perf_logit_tbl <- tibble(perf_logit@x.values[[1]], perf_logit@y.values[[1]])
+
+# Change the names of the columns of the tibble
+names(perf_logit_tbl) <- c('fpr', 'tpr')
+
+# get the FPR and TPR for the tree model
+perf_tree <- performance(pred_tree, measure = 'tpr', x.measure = 'fpr')
+perf_tree_tbl <- tibble(perf_tree@x.values[[1]], perf_tree@y.values[[1]])
+
+# Change the names of the columns of the tibble
+names(perf_tree_tbl) <- c('fpr', 'tpr')
+
+# Plotting function for plotting a nice ROC curve using ggplot
+plot_roc <- function(perf_tbl) {
+  p <- ggplot(data = perf_tbl, aes(x = fpr, y = tpr)) +
+  geom_line(color = 'blue') +
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  labs(x = 'False positive rate', y = 'True positive rate') +
+  theme_bw()
+  return(p)
+}
+
+# Create the ROC curves using the function we created above
+plot_roc(perf_logit_tbl)
+plot_roc(perf_tree_tbl)
+
+```
+### b)
+```{r}
+# calculate the AUC
+auc_logit <- performance(______, measure = 'tpr')
+auc_tree <- performance(_____, measure = 'fpr')
+
+# extract the AUC value
+auc_logit@y.values[[1]]
+auc_tree@y.values[[1]]
+```
