@@ -9,37 +9,74 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(broom)
-file_path <- '/Users/phillipmanning/Downloads/train.csv'
-train <- read_delim(delim = '|', file = file_path)
-saveRDS(train, file = "/Users/phillipmanning/Downloads/train.rds")
-glimpse(train)
+file_path <- '/Users/phillipmanning/Downloads/realtrain.csv'
+train <- read_csv(file_path)
 ```
 ## Exercise 1
+```{r}
+glimpse(train)
+```
 ### There are 1460 observations
 
 ## Exercise 2
 ```{r}
 set.seed(29283)
-train_set <- train %>% sample_frac(train, Id)
-test_set <- train %>% filter(!(train%in% train$Id))
+train_set <- train %>% sample_frac(.7)
+test_set <- train %>% filter(!(Id %in% train_set$Id))
 ```
 ## Exercise 3 
 ```{r}
 mod_0 <- lm(SalePrice ~ 1, data = train_set)
 
 mean(train_set$SalePrice)
-tidy(train)
+tidy(mod_0)
 
 
 glance(mod_0)
 ```
 ## Exercise 4
-### We can assume that the three features will have a positive relationsihp with one another. The better the neighborhood, the better the house and the square footage. The relationship can be estimated lineraly, but a curve based on the smallest sum of squared roots is best to find the line of best fit. If the problem we are trying to solve is understand the Salerpice adn what factors contribute to it flucuating, then yes our features are useful. 
 
-## Exercise 7 
+### We can assume that the three features will have a positive relationsihp with one another. The better the neighborhood, the better the house and the square footage. The relationship can be estimated lineraly, but a curve based on the smallest sum of squared roots is best to find the line of best fit. If the problem we are trying to solve is understand the Salerprice adn what factors contribute to it flucuating, then yes our features are useful. 
 ```{r}
-sim1a <- tibble(
+mod_1 <- lm(SalePrice ~ GrLivArea + OverallQual + Neighborhood, data = train_set)
+glance(mod_1)
+tidy(mod_1)
+```
+## Exercise 5
+```{r}
+test_predictions <- predict(mod_1, newdata = test_set)
+rmse <- sqrt(mean((test_set$SalePrice - test_predictions)^2))
+rmse
+```
+## Exercise 7
+```{r}
+collect_results <- function(sim_data) {
+  sim1a <- tibble(
   x = rep(1:10, each = 3),
   y = x * 1.5 + 6 + rt(length(x), df = 2)
-)
-simla_model<-lm(simla)
+  )
+  
+  sim_mod <- lm(y ~ x, data = sim1a)
+  rsq <- glance(sim_mod) %>% .[['adj.r.squared']]
+  slopes <- tidy(sim_mod) %>% filter(term == 'x') %>% .[['estimate']]
+  tibble(rsq, slopes)
+}
+
+# define iter to do 1000 simulations
+iter <- 1:1000
+
+# use the map_dfr function to map the function above to the iter
+# vector. Basically, run the function 1000 times and collect all
+# of the results into a data.frame
+mod_results <- map_dfr(iter, collect_results)
+
+# visualize the distributions of the adjusted R-squared and the slopes
+mod_results %>% ggplot(aes(x = rsq)) +
+  geom_histogram(color = 'white', fill = 'red') +
+  labs(x = 'Adjusted R-squared', title = 'Distribution of model fit on simulated data') +
+  theme_bw()
+mod_results %>% ggplot(aes(x = slopes)) +
+  geom_histogram(color = 'white', fill = 'blue') +
+  labs(x = 'Coefficient on x', title = 'Distribution of slopes for simulated data models') +
+  theme_bw()
+```
