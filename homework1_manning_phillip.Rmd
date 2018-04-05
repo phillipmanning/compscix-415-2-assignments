@@ -1,0 +1,43 @@
+---
+title: "“COMPSCIX 415.2 Homework 1”"
+output: 
+  html_document: 
+    theme: cerulean
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+`My Github repository for my assignments can be found at this URL [https://github.com/phillipmanning/compscix-415-2-assignments.git](https://github.com/phillipmanning/compscix-415-2-assignments.git
+                                                                   
+```{r load_packages, warning=FALSE, message=FALSE} 
+library(tidyverse)
+library(mdsr)
+``` 
+## Question 1
+```{r}
+data("WorldCities")
+   glimpse(WorldCities)
+   WorldCities <- head(WorldCities, 200) # 200 rows
+   country_col <- WorldCities$country
+   unique(country_col)
+```
+```{r}
+country_col <- select(WorldCities, country)
+```                          
+## Question 2
+```{r}
+reg <- WorldCities$region
+unique(reg)
+country_col <-select(WorldCities, country)
+country_col <- WorldCities%>% select(country)
+```
+## Question 3
+```{r}
+WorldCities%>% select(country)%>% unique()
+WorldCities%>% ggplot(aes(x = population)) + geom_histogram()                              
+```
+## Question 4
+```{r}
+WorldCities%>% ggplot(aes(x = population)) + geom_histogram() + xlab('Population') + ylab('Freqency') + ggtitle('Histogram of Population of World Cities') + theme_bw()
+```

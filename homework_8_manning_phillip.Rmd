@@ -13,40 +13,46 @@ library(partykit)
 library(ISLR)
 library(rpart)
 library(broom)
-file_path <- '/Users/phillipmanning/Downloads/train.csv'
-train <- read.table(file_path,
-                    header = FALSE,
-                    sep = ",")
+
 ```
 ## Exercise 1 
 ```{r}
+file_path <- '/Users/phillipmanning/Downloads/finalset.csv'
+train <- read.csv(file_path)
+train <- train %>% mutate(Survived = as.factor(Survived))
 dim(train)
 ```
 ## Exercise 2 
 ```{r}
 set.seed(29283)
 train_set <- train %>% sample_frac(.7)
+test_set <- train %>% filter(!(PassengerId %in% train_set$PassengerId))
 ```
 
 ## Exercise 3 
-### "Not sure why R isn't reading Survived, gives me an error"
+
 ```{r}
-mod_1 <- glm(Survived ~ 1 , data = train, family = 'binomial')
+mod_1 <- glm(Survived ~ Pclass + Sex + Fare, data = train, family = 'binomial')
 
 tidy(mod_1)
 
 ```
 ## Exercise 4
+### A female passenger who paid more than or equal to 23.7 and had a Pclass of more than or equal to 2.5 had a low chance of survival.  
 ```{r}
-tree_mod <- rpart( Survived ~ ., data = train)
+tree_mod <- rpart( Survived ~ Pclass  + Sex + Fare, data = train)
 
 plot(as.party(tree_mod))
 ```
+
 ## Exercise 5 
 
 ```{r}
 test_logit <- predict(mod_1, newdata = test_set, type = 'response')
-test_tree <- predict(tree_mod, newdata = test_set)[,2]
+test_tree <- predict(tree_mod, newdata = test_set) [,2]
+
+test_set <- test_set %>% mutate(test_logit = test_logit)
+test_set <- test_set %>% mutate(test_tree = test_tree)
 
 # create the prediction objects for both models
 pred_logit <- prediction(predictions = test_logit, labels = test_set$Survived)
@@ -83,10 +89,11 @@ plot_roc(perf_tree_tbl)
 
 ```
 ### b)
+### This model serves better than the decision tree and fits the data well. 
 ```{r}
 # calculate the AUC
-auc_logit <- performance(______, measure = 'tpr')
-auc_tree <- performance(_____, measure = 'fpr')
+auc_logit <- performance(pred_logit, measure = 'auc')
+auc_tree <- performance(pred_tree, measure = 'auc')
 
 # extract the AUC value
 auc_logit@y.values[[1]]
