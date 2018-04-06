@@ -1,0 +1,140 @@
+---
+title: "COMPSCIX 415.2 Homework 9/Final"
+author: "Phillip Manning"
+date: "4/2/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(modelr)
+library(rpart)
+library(partykit)
+library(randomForest)
+library(dplyr)
+
+```
+## BootStrapping
+
+### Exercise 1
+```{r}
+file_path <-'/Users/phillipmanning/Downloads/finalset.csv'
+train <- read_csv(file_path)
+dim(train)
+train <- train %>% mutate_if(is.character,as.factor)
+train <- train %>% mutate(Survived = as.factor(Survived))
+glimpse(train)
+```
+
+### Exercise 2
+```{r}
+titanic_boot <- bootstrap(data = train, n = 100)
+glimpse(titanic_boot)
+```
+
+### Exercise 3
+```{r}
+as.tibble(titanic_boot$strap[[1]]) %>% n_distinct()
+as.tibble(titanic_boot$strap[[2]]) %>% n_distinct()
+as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
+```
+
+### Exercise 4
+```{r}
+age_mean <- function() {
+  data <- as.tibble(titantic_boot) # convert input data set to a tibble
+  mean_age <- mean(data$Age, na.rm = TRUE) # take the mean of Age, remove NAs
+  return(mean_age) # return the mean value of Age from data
+}
+
+
+# loop through the 100 bootstrap samples and use the age_mean()
+# function
+all_means <- rep(NA, 100)
+
+# start the loop
+for(i in 1:100) {
+  all_means[i] <- age_mean(titanic_boot$strap[[i]])
+}
+
+# take a look at some of the means you calculated from your samples
+head(all_means)
+
+# convert to a tibble so we can use if for plotting
+all_means <- tibble(all_means = all_means)
+```
+### Exercise 5
+```{r}
+all_means %>% ggplot(aes(x=all_means)) + geom_histogram()
+```
+
+### Exercise 6
+```{r}
+Std <- function(age) sd(age)/sqrt(100)
+```
+
+## RandomForests
+
+### Exercise 1
+```{r}
+set.seed(987)
+
+model_data <- resample_partition(Survived, c(test = 0.3, train = 0.7))
+train_set <- as.tibble(model_data$Survived)
+test_set <- as.tibble(model_data$Survived)
+```
+
+### Exercise 2
+```{r}
+Train_mod <- rpart(Survived ~ Pclass + Sex + Fare + Age + Parch + Embarked, data = train_set)
+plot(as.party(Train_mod))
+```
+
+### Exercise 3 
+```{r}
+rf_mod <- randomForest(AHD ~ .,
+                       data = train_set,
+                       ntress = 500,
+                       mtry=4,
+                       na.action = na.roughfix())
+```
+### Exercise 4
+
+```{r}
+library(ROCR)
+rf_preds <- predict(____, newdata = test_set, type = 'prob')[,2]
+tree_preds <- predict(____, newdata = test_set)[,2]
+
+pred_rf <- prediction(predictions = _____, labels = ____)
+pred_tree <- prediction(predictions = _____, labels = ____)
+```
+### Exercise 5
+```{r}
+# get the FPR and TPR for the logistic model
+# recall that the ROC curve plots the FPR on the x-axis
+perf_rf <- performance(pred_rf, measure = 'tpr', x.measure = 'fpr')
+perf_rf_tbl <- tibble(perf_rf@x.values[[1]], perf_rf@y.values[[1]])
+
+# Change the names of the columns of the tibble
+names(perf_rf_tbl) <- c('fpr', 'tpr')
+
+# get the FPR and TPR for the tree model
+perf_tree <- performance(pred_tree, measure = 'tpr', x.measure = 'fpr')
+perf_tree_tbl <- tibble(perf_tree@x.values[[1]], perf_tree@y.values[[1]])
+
+# Change the names of the columns of the tibble
+names(perf_tree_tbl) <- c('fpr', 'tpr')
+
+# Plotting function for plotting a nice ROC curve using ggplot
+plot_roc <- function(perf_tbl) {
+  p <- ggplot(data = perf_tbl, aes(x = fpr, y = tpr)) +
+  geom_line(color = 'blue') +
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  labs(x = 'False positive rate', y = 'True positive rate') +
+  theme_bw()
+  return(p)
+}
+```
+### Exercise 6
+### The random forest model should perform better than the decision tree because the random forest is taking the average of more features. Although I don't have the specific false positive rate, I can say intuitively that the randomforest model would have a smaller false positive rate than the decision tree. 
