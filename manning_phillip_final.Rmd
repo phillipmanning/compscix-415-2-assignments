@@ -13,6 +13,7 @@ library(rpart)
 library(partykit)
 library(randomForest)
 library(dplyr)
+library(ROCR)
 
 ```
 ## BootStrapping
@@ -29,6 +30,7 @@ glimpse(train)
 
 ### Exercise 2
 ```{r}
+train <- as.tibble(train)
 titanic_boot <- bootstrap(data = train, n = 100)
 glimpse(titanic_boot)
 ```
@@ -42,8 +44,8 @@ as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
 
 ### Exercise 4
 ```{r}
-age_mean <- function() {
-  data <- as.tibble(titantic_boot) # convert input data set to a tibble
+age_mean <- function(p) {
+  data <- as.tibble(train) # convert input data set to a tibble
   mean_age <- mean(data$Age, na.rm = TRUE) # take the mean of Age, remove NAs
   return(mean_age) # return the mean value of Age from data
 }
@@ -66,7 +68,7 @@ all_means <- tibble(all_means = all_means)
 ```
 ### Exercise 5
 ```{r}
-all_means %>% ggplot(aes(x=all_means)) + geom_histogram()
+all_means %>% ggplot(aes(x=all_means)) + geom_histogram(binwidth = .2)
 ```
 
 ### Exercise 6
@@ -74,15 +76,26 @@ all_means %>% ggplot(aes(x=all_means)) + geom_histogram()
 Std <- function(age) sd(age)/sqrt(100)
 ```
 
-## RandomForests
+## Random forests
+
+
+```{r}
+file_path <-'/Users/phillipmanning/Downloads/finalset.csv'
+train <- read_csv(file_path)
+dim(train)
+train <- train %>% mutate(Survived = as.factor(Survived))
+train <- train %>% mutate_if(is.character,as.factor)
+glimpse(train)
+```
 
 ### Exercise 1
 ```{r}
 set.seed(987)
 
-model_data <- resample_partition(Survived, c(test = 0.3, train = 0.7))
-train_set <- as.tibble(model_data$Survived)
-test_set <- as.tibble(model_data$Survived)
+model_data <- resample_partition(train, c(test = 0.3, train = 0.7))
+train_set <- as.tibble(model_data$train)
+test_set <- as.tibble(model_data$test)
+
 ```
 
 ### Exercise 2
@@ -93,23 +106,21 @@ plot(as.party(Train_mod))
 
 ### Exercise 3 
 ```{r}
-rf_mod <- randomForest(AHD ~ .,
+rf_mod <- randomForest(Survived ~ Pclass,
                        data = train_set,
-                       ntress = 500,
+                       ntrees = 500,
                        mtry=4,
-                       na.action = na.roughfix())
+                       na.action = na.roughfix)
 ```
-### Exercise 4
-
+### Exercise 4 
 ```{r}
-library(ROCR)
-rf_preds <- predict(____, newdata = test_set, type = 'prob')[,2]
-tree_preds <- predict(____, newdata = test_set)[,2]
+rf_preds <- predict(rf_mod, newdata = test_set, type = 'prob')[,2]
+tree_preds <- predict(Train_mod, newdata = test_set)[,2]
 
-pred_rf <- prediction(predictions = _____, labels = ____)
-pred_tree <- prediction(predictions = _____, labels = ____)
+pred_rf <- prediction (predictions = rf_preds, labels = test_set$Survived)
+pred_tree <- prediction (predictions = tree_preds, labels = test_set$Survived)
 ```
-### Exercise 5
+### Exercise 5 
 ```{r}
 # get the FPR and TPR for the logistic model
 # recall that the ROC curve plots the FPR on the x-axis
@@ -125,7 +136,7 @@ perf_tree_tbl <- tibble(perf_tree@x.values[[1]], perf_tree@y.values[[1]])
 
 # Change the names of the columns of the tibble
 names(perf_tree_tbl) <- c('fpr', 'tpr')
-
+bind_rows(train_set,test_set)
 # Plotting function for plotting a nice ROC curve using ggplot
 plot_roc <- function(perf_tbl) {
   p <- ggplot(data = perf_tbl, aes(x = fpr, y = tpr)) +
